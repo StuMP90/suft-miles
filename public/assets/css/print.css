@@ -1,0 +1,145 @@
+@media print {
+    @page {
+        margin: 1.2cm;
+    }
+
+    body {
+        background: #ffffff;
+        padding: 0;
+        color: #000000;
+    }
+
+    .container {
+        max-width: 100%;
+    }
+
+    /* Nothing interactive means anything once it's on paper */
+    #profile-panel,
+    #upload-panel,
+    #print-row,
+    .privacy-note,
+    .hint,
+    .status-message,
+    button,
+    input,
+    select {
+        display: none !important;
+    }
+
+    .header,
+    .stats-block,
+    .trips-section,
+    .fuel-price-banner,
+    .empty-state {
+        box-shadow: none;
+        border: 1px solid #cbd5e0;
+        padding: 6px 14px;
+        margin-bottom: 6px;
+    }
+
+    .header {
+        gap: 10px;
+    }
+
+    .logo-icon {
+        width: 36px;
+        height: 36px;
+    }
+
+    h1 {
+        font-size: 1.3em;
+        margin-bottom: 2px;
+    }
+
+    .subtitle {
+        font-size: 0.85em;
+    }
+
+    .profile-label {
+        font-size: 0.9em;
+        margin-top: 2px;
+    }
+
+    h2 {
+        font-size: 0.95em;
+        margin-bottom: 6px;
+    }
+
+    .fuel-price-banner {
+        font-size: 0.8em;
+    }
+
+    /* Place the two summary blocks side by side - roughly halves their combined height */
+    #report-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        align-items: start;
+    }
+
+    .fuel-price-banner,
+    .trips-section {
+        grid-column: 1 / -1;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 6px;
+    }
+
+    .stat-card {
+        border: 1px solid #e2e8f0;
+        break-inside: avoid;
+        padding: 4px 6px;
+    }
+
+    .stat-label {
+        font-size: 0.65em;
+        margin-bottom: 2px;
+    }
+
+    .stat-value {
+        font-size: 1.05em;
+    }
+
+    .stat-unit {
+        font-size: 0.65em;
+    }
+
+    table {
+        font-size: 0.72em;
+    }
+
+    th,
+    td {
+        padding: 2px 5px;
+    }
+
+    thead {
+        display: table-header-group;
+    }
+
+    tr {
+        break-inside: avoid;
+    }
+
+    .trend {
+        font-size: 0.85em;
+    }
+
+    .trend-hint {
+        color: #4a5568;
+    }
+
+    .footer {
+        color: #000000;
+        opacity: 1;
+        margin-top: 8px;
+        padding: 8px;
+    }
+
+    .footer .disclaimer {
+        color: #4a5568;
+        font-size: 0.75em;
+    }
+}

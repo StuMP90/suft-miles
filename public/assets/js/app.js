@@ -28,6 +28,8 @@
         privacyInfoBtn: document.getElementById('privacy-info-btn'),
         privacyDialog: document.getElementById('privacy-dialog'),
         privacyDialogClose: document.getElementById('privacy-dialog-close'),
+        printBtn: document.getElementById('print-btn'),
+        profileLabel: document.getElementById('profile-label'),
     };
 
     function getProfileNames() {
@@ -48,6 +50,11 @@
 
     function setActiveProfile(name) {
         localStorage.setItem(ACTIVE_PROFILE_KEY, name);
+        updateProfileLabel(name);
+    }
+
+    function updateProfileLabel(name) {
+        els.profileLabel.textContent = 'Report for: ' + name;
     }
 
     function loadRates() {
@@ -308,6 +315,7 @@
         els.comparisonMpg.value = comparison.mpg;
 
         refreshProfileSelect();
+        updateProfileLabel(getActiveProfile());
 
         els.profileSelect.addEventListener('change', () => {
             setActiveProfile(els.profileSelect.value);
@@ -324,6 +332,7 @@
         els.backupBtn.addEventListener('click', handleBackup);
         els.privacyInfoBtn.addEventListener('click', () => els.privacyDialog.showModal());
         els.privacyDialogClose.addEventListener('click', () => els.privacyDialog.close());
+        els.printBtn.addEventListener('click', () => window.print());
 
         await loadReportForActiveProfile();
     }

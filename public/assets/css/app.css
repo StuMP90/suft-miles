@@ -59,6 +59,13 @@ h2 {
     font-size: 1.1em;
 }
 
+.profile-label {
+    color: #2d3748;
+    font-size: 1.05em;
+    font-weight: 600;
+    margin-top: 6px;
+}
+
 .privacy-note {
     color: #38a169;
     font-size: 0.9em;
@@ -186,6 +193,11 @@ button.danger:hover {
 .status-message.error {
     color: #e53e3e;
     font-weight: 600;
+}
+
+#print-row {
+    justify-content: flex-end;
+    margin-bottom: 20px;
 }
 
 .fuel-price-banner {

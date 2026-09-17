@@ -7,6 +7,7 @@
     <link rel="icon" type="image/svg+xml" href="assets/img/logo.svg">
     <link rel="apple-touch-icon" href="assets/img/logo.svg">
     <link rel="stylesheet" href="assets/css/app.css">
+    <link rel="stylesheet" href="assets/css/print.css" media="print">
 </head>
 <body>
     <div class="container">
@@ -15,6 +16,7 @@
             <div class="header-text">
                 <h1>Surf4Miles</h1>
                 <p class="subtitle">BYD Dolphin Surf &middot; Energy Efficiency Report</p>
+                <p class="profile-label" id="profile-label"></p>
                 <p class="privacy-note">Your driving data stays in this browser. Nothing is stored on this site. <button type="button" id="privacy-info-btn" class="link-button">How does this work?</button></p>
             </div>
         </div>
@@ -67,6 +69,10 @@
             </div>
             <p class="hint">Backup and restore are merges, not overwrites &mdash; safe to use across two computers (e.g. a desktop and the in-car browser) without losing trips recorded on either one.</p>
             <p id="status-message" class="status-message" role="status"></p>
+        </div>
+
+        <div class="panel-row" id="print-row">
+            <button type="button" id="print-btn">Print report</button>
         </div>
 
         <div id="report-container">
