@@ -66,11 +66,13 @@ final class PetrolPriceCache
             (float) ($cache['petrol_price_per_litre'] ?? 0.0),
             (float) ($cache['diesel_price_per_litre'] ?? 0.0),
             new \DateTimeImmutable('@' . (int) ($cache['as_of'] ?? 0)),
+            $cache['petrol_change_percent'] ?? null,
+            $cache['diesel_change_percent'] ?? null,
         );
     }
 
     /**
-     * @return array{petrol_price_per_litre: ?float, diesel_price_per_litre: ?float, as_of: ?int, last_attempt_at: ?int}|null
+     * @return array{petrol_price_per_litre: ?float, diesel_price_per_litre: ?float, petrol_change_percent: ?float, diesel_change_percent: ?float, as_of: ?int, last_attempt_at: ?int}|null
      */
     private static function refreshWithLock(string $path, ?array $stale): ?array
     {
@@ -104,7 +106,7 @@ final class PetrolPriceCache
     }
 
     /**
-     * @return array{petrol_price_per_litre: ?float, diesel_price_per_litre: ?float, as_of: ?int, last_attempt_at: ?int}
+     * @return array{petrol_price_per_litre: ?float, diesel_price_per_litre: ?float, petrol_change_percent: ?float, diesel_change_percent: ?float, as_of: ?int, last_attempt_at: ?int}
      */
     private static function attemptFetch(string $path, ?array $stale): array
     {
@@ -115,12 +117,16 @@ final class PetrolPriceCache
             ? [
                 'petrol_price_per_litre' => $fetched->petrolPricePerLitre,
                 'diesel_price_per_litre' => $fetched->dieselPricePerLitre,
+                'petrol_change_percent' => $fetched->petrolChangePercent,
+                'diesel_change_percent' => $fetched->dieselChangePercent,
                 'as_of' => $fetched->asOf->getTimestamp(),
                 'last_attempt_at' => $now,
             ]
             : [
                 'petrol_price_per_litre' => $stale['petrol_price_per_litre'] ?? null,
                 'diesel_price_per_litre' => $stale['diesel_price_per_litre'] ?? null,
+                'petrol_change_percent' => $stale['petrol_change_percent'] ?? null,
+                'diesel_change_percent' => $stale['diesel_change_percent'] ?? null,
                 'as_of' => $stale['as_of'] ?? null,
                 'last_attempt_at' => $now,
             ];
@@ -131,7 +137,7 @@ final class PetrolPriceCache
     }
 
     /**
-     * @return array{petrol_price_per_litre: ?float, diesel_price_per_litre: ?float, as_of: ?int, last_attempt_at: ?int}|null
+     * @return array{petrol_price_per_litre: ?float, diesel_price_per_litre: ?float, petrol_change_percent: ?float, diesel_change_percent: ?float, as_of: ?int, last_attempt_at: ?int}|null
      */
     private static function readCache(string $path): ?array
     {
@@ -150,6 +156,8 @@ final class PetrolPriceCache
         return [
             'petrol_price_per_litre' => isset($data['petrol_price_per_litre']) ? (float) $data['petrol_price_per_litre'] : null,
             'diesel_price_per_litre' => isset($data['diesel_price_per_litre']) ? (float) $data['diesel_price_per_litre'] : null,
+            'petrol_change_percent' => isset($data['petrol_change_percent']) ? (float) $data['petrol_change_percent'] : null,
+            'diesel_change_percent' => isset($data['diesel_change_percent']) ? (float) $data['diesel_change_percent'] : null,
             'as_of' => isset($data['as_of']) ? (int) $data['as_of'] : null,
             'last_attempt_at' => isset($data['last_attempt_at']) ? (int) $data['last_attempt_at'] : null,
         ];
@@ -179,8 +187,9 @@ final class PetrolPriceCache
      * Parses DESNZ's "Weekly road fuel prices" CSV, e.g.:
      *   Date,ULSP ... Pump price in pence/litre,ULSD ... Pump price in pence/litre,...
      *   14/09/2026,168.14,190.72,52.95,52.95,20,20
-     * and returns the most recent petrol (ULSP) and diesel (ULSD) prices.
-     * Walks backwards from the end of the file so a trailing blank line or an
+     * and returns the most recent petrol (ULSP) and diesel (ULSD) prices,
+     * plus the percentage change vs. the previous published week. Walks
+     * backwards from the end of the file so a trailing blank line or an
      * extra column added in a future revision doesn't break parsing.
      */
     private static function parseWeeklyFuelPricesCsv(string $csv): ?FuelPrices
@@ -188,7 +197,8 @@ final class PetrolPriceCache
         $csv = preg_replace('/^\xEF\xBB\xBF/', '', $csv) ?? $csv; // strip UTF-8 BOM if present
         $lines = preg_split('/\r\n|\r|\n/', trim($csv)) ?: [];
 
-        for ($i = count($lines) - 1; $i > 0; $i--) {
+        $rows = [];
+        for ($i = count($lines) - 1; $i > 0 && count($rows) < 2; $i--) {
             if (trim($lines[$i]) === '') {
                 continue;
             }
@@ -202,11 +212,32 @@ final class PetrolPriceCache
             $dieselPence = trim($row[2]);
 
             if ($date !== false && is_numeric($petrolPence) && is_numeric($dieselPence)) {
-                return new FuelPrices((float) $petrolPence / 100.0, (float) $dieselPence / 100.0, $date);
+                $rows[] = ['date' => $date, 'petrol' => (float) $petrolPence, 'diesel' => (float) $dieselPence];
             }
         }
 
-        return null;
+        if ($rows === []) {
+            return null;
+        }
+
+        $latest = $rows[0];
+        $previous = $rows[1] ?? null;
+
+        return new FuelPrices(
+            $latest['petrol'] / 100.0,
+            $latest['diesel'] / 100.0,
+            $latest['date'],
+            self::percentChange($previous['petrol'] ?? null, $latest['petrol']),
+            self::percentChange($previous['diesel'] ?? null, $latest['diesel']),
+        );
+    }
+
+    private static function percentChange(?float $previous, float $current): ?float
+    {
+        if ($previous === null || $previous <= 0.0) {
+            return null;
+        }
+        return (($current - $previous) / $previous) * 100.0;
     }
 
     private static function cachePath(): string

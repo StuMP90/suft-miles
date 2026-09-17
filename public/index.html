@@ -49,8 +49,14 @@
                 <label for="ec-database-input">Add trips from EC_database.db</label>
                 <input type="file" id="ec-database-input" accept=".db">
                 <button type="button" id="add-trips-btn">Add Trips</button>
-                <button type="button" id="download-btn">Download my data (.db)</button>
             </div>
+            <div class="panel-row">
+                <label for="restore-database-input">Restore from a backup</label>
+                <input type="file" id="restore-database-input" accept=".db">
+                <button type="button" id="restore-btn">Restore</button>
+                <button type="button" id="backup-btn">Backup my data (.db)</button>
+            </div>
+            <p class="hint">Backup and restore are merges, not overwrites &mdash; safe to use across two computers (e.g. a desktop and the in-car browser) without losing trips recorded on either one.</p>
             <p id="status-message" class="status-message" role="status"></p>
         </div>
 

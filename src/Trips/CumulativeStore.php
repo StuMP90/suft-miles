@@ -51,14 +51,15 @@ final class CumulativeStore
     }
 
     /**
-     * Merge new trips into the writable database at $path, deduping by
+     * Merge entries into the writable database at $path, deduping by
      * start_time and keeping the longer duration on a repeated start_time
-     * (the car sometimes re-logs an in-progress trip after a restart).
+     * (the car sometimes re-logs an in-progress trip after a restart, and a
+     * restored backup may legitimately overlap what's already here).
      *
-     * @param list<Trip> $newTrips
+     * @param list<MergeEntry> $entries
      * @return int number of rows inserted or updated
      */
-    public static function merge(string $path, array $newTrips, float $standardRate, float $peakSaveRate): int
+    public static function merge(string $path, array $entries): int
     {
         $db = new \SQLite3($path);
         $db->enableExceptions(true);
@@ -83,7 +84,8 @@ final class CumulativeStore
                  WHERE start_time = :start_time'
             );
 
-            foreach ($newTrips as $trip) {
+            foreach ($entries as $entry) {
+                $trip = $entry->trip;
                 $startTs = $trip->startTime->getTimestamp();
 
                 $select->bindValue(':start_time', $startTs, SQLITE3_INTEGER);
@@ -99,8 +101,8 @@ final class CumulativeStore
                     $insert->bindValue(':energy', $trip->energyUsedKwh, SQLITE3_FLOAT);
                     $insert->bindValue(':duration', $trip->durationMinutes, SQLITE3_FLOAT);
                     $insert->bindValue(':efficiency', $efficiency, SQLITE3_FLOAT);
-                    $insert->bindValue(':std_rate', $standardRate, SQLITE3_FLOAT);
-                    $insert->bindValue(':peak_rate', $peakSaveRate, SQLITE3_FLOAT);
+                    $insert->bindValue(':std_rate', $entry->standardRate, SQLITE3_FLOAT);
+                    $insert->bindValue(':peak_rate', $entry->peakSaveRate, SQLITE3_FLOAT);
                     $insert->bindValue(':imported_at', $now, SQLITE3_INTEGER);
                     $insert->execute();
                     $insert->reset();
@@ -161,5 +163,25 @@ final class CumulativeStore
         $db->close();
 
         return $trips;
+    }
+
+    /**
+     * Converts trips read back from a cumulative store (e.g. a restored
+     * backup) into merge entries that preserve each trip's own historic
+     * rates, rather than stamping them with today's rate settings.
+     *
+     * @param list<StoredTrip> $storedTrips
+     * @return list<MergeEntry>
+     */
+    public static function toMergeEntries(array $storedTrips): array
+    {
+        return array_map(
+            static fn (StoredTrip $st) => new MergeEntry(
+                new Trip($st->startTime, $st->endTime, $st->milesDriven, $st->energyUsedKwh, $st->durationMinutes),
+                $st->standardRateAtImport,
+                $st->peakSaveRateAtImport,
+            ),
+            $storedTrips,
+        );
     }
 }

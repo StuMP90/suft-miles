@@ -12,6 +12,7 @@ use Surf4Miles\Report\ReportRenderer;
 use Surf4Miles\Sqlite\SqliteValidator;
 use Surf4Miles\Sqlite\UploadValidationException;
 use Surf4Miles\Trips\CumulativeStore;
+use Surf4Miles\Trips\MergeEntry;
 use Surf4Miles\Trips\TripExtractor;
 
 header('Content-Type: application/json; charset=utf-8');
@@ -59,6 +60,7 @@ $comparisonMpg = clampMpg($_POST['comparison_mpg'] ?? null);
 /** @var list<\Surf4Miles\Trips\Trip> $newTrips */
 $newTrips = [];
 $tripsImported = 0;
+$tripsRestored = 0;
 
 try {
     if (isset($_FILES['ec_database']) && $_FILES['ec_database']['error'] === UPLOAD_ERR_OK) {
@@ -70,6 +72,15 @@ try {
         }
     } elseif (isset($_FILES['ec_database']) && $_FILES['ec_database']['error'] !== UPLOAD_ERR_NO_FILE) {
         throw new UploadValidationException('Upload failed - the file may be too large');
+    }
+
+    // A restored backup keeps each trip's own historic rates rather than
+    // being stamped with today's rate settings (see MergeEntry).
+    $restoreEntries = [];
+    if (isset($_FILES['restore_db']) && $_FILES['restore_db']['error'] === UPLOAD_ERR_OK) {
+        $restoreEntries = CumulativeStore::toMergeEntries(CumulativeStore::readAll($_FILES['restore_db']['tmp_name']));
+    } elseif (isset($_FILES['restore_db']) && $_FILES['restore_db']['error'] !== UPLOAD_ERR_NO_FILE) {
+        throw new UploadValidationException('Restore upload failed - the file may be too large');
     }
 
     $workingCumulative = new TempFile('.db');
@@ -85,7 +96,12 @@ try {
     }
 
     if ($newTrips !== []) {
-        $tripsImported = CumulativeStore::merge($workingCumulative->path, $newTrips, $standardRate, $peakSaveRate);
+        $ecEntries = array_map(static fn ($trip) => new MergeEntry($trip, $standardRate, $peakSaveRate), $newTrips);
+        $tripsImported = CumulativeStore::merge($workingCumulative->path, $ecEntries);
+    }
+
+    if ($restoreEntries !== []) {
+        $tripsRestored = CumulativeStore::merge($workingCumulative->path, $restoreEntries);
     }
 
     $allTrips = CumulativeStore::readAll($workingCumulative->path);
@@ -118,6 +134,7 @@ try {
         'ok' => true,
         'report_html' => $reportHtml,
         'trips_imported' => $tripsImported,
+        'trips_restored' => $tripsRestored,
         'total_trips' => $allStats->totalTrips,
         'generated_at' => (new \DateTimeImmutable())->format(DATE_ATOM),
         'cumulative_db_base64' => base64_encode($cumulativeBytes),

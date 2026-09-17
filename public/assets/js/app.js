@@ -19,7 +19,9 @@
         comparisonMpg: document.getElementById('comparison-mpg'),
         ecInput: document.getElementById('ec-database-input'),
         addTripsBtn: document.getElementById('add-trips-btn'),
-        downloadBtn: document.getElementById('download-btn'),
+        restoreInput: document.getElementById('restore-database-input'),
+        restoreBtn: document.getElementById('restore-btn'),
+        backupBtn: document.getElementById('backup-btn'),
         statusMessage: document.getElementById('status-message'),
         reportContainer: document.getElementById('report-container'),
         generatedAt: document.getElementById('generated-at'),
@@ -128,9 +130,10 @@
         return new Blob([bytes], { type: 'application/x-sqlite3' });
     }
 
-    async function callReportApi({ ecFile, cumulativeBlob, rates, comparison }) {
+    async function callReportApi({ ecFile, restoreFile, cumulativeBlob, rates, comparison }) {
         const form = new FormData();
         if (ecFile) form.append('ec_database', ecFile, 'EC_database.db');
+        if (restoreFile) form.append('restore_db', restoreFile, 'restore.db');
         if (cumulativeBlob) form.append('cumulative_db', cumulativeBlob, 'cumulative.db');
         form.append('standard_rate', String(rates.standardRate));
         form.append('peak_save_rate', String(rates.peakSaveRate));
@@ -200,11 +203,11 @@
         }
     }
 
-    async function handleDownload() {
+    async function handleBackup() {
         const activeName = getActiveProfile();
         const profile = await Surf4MilesStore.getProfile(activeName);
         if (!profile || !profile.dbBlob) {
-            setStatus('No data to download yet for this profile', true);
+            setStatus('No data to back up yet for this profile', true);
             return;
         }
 
@@ -218,6 +221,39 @@
         a.click();
         a.remove();
         URL.revokeObjectURL(url);
+    }
+
+    async function handleRestore() {
+        const file = els.restoreInput.files[0];
+        if (!file) {
+            setStatus('Choose a backup .db file first', true);
+            return;
+        }
+
+        els.restoreBtn.disabled = true;
+        setStatus('Merging restored backup into this profile…', false);
+
+        try {
+            const activeName = getActiveProfile();
+            const existing = await Surf4MilesStore.getProfile(activeName);
+            const data = await callReportApi({
+                restoreFile: file,
+                cumulativeBlob: existing ? existing.dbBlob : null,
+                rates: currentRatesFromInputs(),
+                comparison: currentComparisonFromInputs(),
+            });
+
+            const blob = base64ToBlob(data.cumulative_db_base64);
+            await Surf4MilesStore.putProfile(activeName, blob);
+
+            renderReportHtml(data.report_html, data.generated_at);
+            setStatus('Restored ' + data.trips_restored + ' trip(s) from backup into "' + activeName + '". Total trips: ' + data.total_trips + '.', false);
+            els.restoreInput.value = '';
+        } catch (err) {
+            setStatus('Could not restore backup: ' + err.message, true);
+        } finally {
+            els.restoreBtn.disabled = false;
+        }
     }
 
     function handleNewProfile() {
@@ -281,7 +317,8 @@
         els.comparisonFuelType.addEventListener('change', handleSettingsChange);
         els.comparisonMpg.addEventListener('change', handleSettingsChange);
         els.addTripsBtn.addEventListener('click', handleAddTrips);
-        els.downloadBtn.addEventListener('click', handleDownload);
+        els.restoreBtn.addEventListener('click', handleRestore);
+        els.backupBtn.addEventListener('click', handleBackup);
 
         await loadReportForActiveProfile();
     }

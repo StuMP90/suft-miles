@@ -55,9 +55,27 @@ final class ReportRenderer
         }
 
         return '<p class="fuel-price-banner">UK average pump prices (' . htmlspecialchars($fuelPrices->asOf->format('d M Y')) . '): '
-            . 'Petrol ' . self::num($fuelPrices->petrolPricePerLitre * 100, 1) . 'p/L &middot; '
-            . 'Diesel ' . self::num($fuelPrices->dieselPricePerLitre * 100, 1) . 'p/L'
+            . 'Petrol ' . self::num($fuelPrices->petrolPricePerLitre * 100, 1) . 'p/L' . self::trend($fuelPrices->petrolChangePercent) . ' &middot; '
+            . 'Diesel ' . self::num($fuelPrices->dieselPricePerLitre * 100, 1) . 'p/L' . self::trend($fuelPrices->dieselChangePercent)
+            . ' <span class="trend-hint">(vs. previous week)</span>'
             . '</p>';
+    }
+
+    private static function trend(?float $changePercent): string
+    {
+        if ($changePercent === null || !is_finite($changePercent)) {
+            return '';
+        }
+
+        if (abs($changePercent) < 0.05) {
+            return ' <span class="trend trend-flat">&#9644; flat</span>';
+        }
+
+        $isUp = $changePercent > 0;
+        $arrow = $isUp ? '&#9650;' : '&#9660;';
+        $class = $isUp ? 'trend-up' : 'trend-down';
+
+        return ' <span class="trend ' . $class . '">' . $arrow . ' ' . self::num(abs($changePercent), 1) . '%</span>';
     }
 
     private static function statsGrid(
