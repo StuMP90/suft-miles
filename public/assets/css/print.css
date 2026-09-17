@@ -138,6 +138,15 @@
         padding: 8px;
     }
 
+    .footer-link {
+        color: #000000;
+    }
+
+    .footer-link[href]::after {
+        content: " (" attr(href) ")";
+        font-size: 0.9em;
+    }
+
     .footer .disclaimer {
         color: #4a5568;
         font-size: 0.75em;

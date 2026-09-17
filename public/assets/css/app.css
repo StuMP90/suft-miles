@@ -325,6 +325,11 @@ tr:hover {
     opacity: 0.9;
 }
 
+.footer-link {
+    color: white;
+    text-decoration: underline;
+}
+
 .footer .disclaimer {
     font-size: 0.8em;
     opacity: 0.8;
