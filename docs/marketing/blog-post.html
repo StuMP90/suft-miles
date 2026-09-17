@@ -1,0 +1,49 @@
+<!-- Paste into your blog's HTML/source editor. Upload screenshot-onboarding.png and
+     screenshot-report.png to your blog's media library first and update the two
+     <img src> paths below to match. -->
+
+<h1>Surf4Miles: a free energy report for BYD Dolphin Surf owners, without giving up your data</h1>
+
+<p>I own a BYD Dolphin Surf, and like a lot of EV owners I got curious about the numbers behind my driving fairly quickly: how many miles per kWh am I actually getting, what's that costing me at my electricity tariff, and how does it compare to what a petrol car would cost for the same trips?</p>
+
+<p>The car logs all of this itself &mdash; every trip's distance, energy use, and duration is sitting in a file called <code>EC_database.db</code>, which you can copy off the car via its USB port. I wrote a small tool to turn that into a proper report for myself. Then I thought other Dolphin Surf owners would probably want the same thing, and started turning it into a website: <strong>Surf4Miles</strong>.</p>
+
+<h2>The constraint that shaped everything</h2>
+
+<p>The obvious way to build this for multiple people is the usual way: sign up, upload your data, we store it, you log in to see your report. I didn't want to do that &mdash; partly because it's more to build and maintain, but mostly because I didn't want to be responsible for holding a database of strangers' driving habits.</p>
+
+<p>So Surf4Miles works differently:</p>
+
+<ul>
+    <li><strong>No accounts.</strong> There's nothing to sign up for.</li>
+    <li><strong>Your data stays in your browser.</strong> Your cumulative trip history is kept locally, using a browser storage feature (IndexedDB) &mdash; not in a database on the server.</li>
+    <li><strong>Uploads are processed, not stored.</strong> When you upload your car's <code>EC_database.db</code>, the server reads it just long enough to calculate your report and hand back the updated numbers, then discards its temporary copy. Nothing is logged or written to permanent storage.</li>
+</ul>
+
+<p><img src="screenshot-onboarding.png" alt="The Surf4Miles upload screen" style="max-width: 100%; height: auto;"></p>
+
+<h2>What the report shows</h2>
+
+<p>Once you've uploaded your trip data, you get a report with your all-time totals and a recent-trips summary: total miles, energy used, efficiency in miles/kWh, driving time and average speed, what you've spent historically vs. at your current electricity rate, cost per mile, and a comparison against what the same driving would cost in a petrol or diesel car at your chosen MPG &mdash; using the UK's official weekly average fuel prices, with a week-over-week trend indicator.</p>
+
+<p><img src="screenshot-report.png" alt="A sample Surf4Miles report" style="max-width: 100%; height: auto;"></p>
+
+<h2>A few details I put some thought into</h2>
+
+<ul>
+    <li><strong>Multiple cars.</strong> If your household has more than one Dolphin Surf (or you just want to keep test data separate), you can create named profiles, each with its own local history.</li>
+    <li><strong>Backup and restore.</strong> You can download your cumulative data as a <code>.db</code> file at any time, and restore it elsewhere &mdash; it merges rather than overwrites, so it's safe to use across two devices (say, a desktop and the in-car browser) without either one losing trips the other recorded.</li>
+    <li><strong>A real outlier filter.</strong> A newly-delivered car's very first logged "trips" are often the factory, the transit boat, and the dealer prep &mdash; hours of near-zero movement that aren't real driving. Rather than a fixed date cutoff, Surf4Miles filters on average speed and trip duration, so it generalises to any car's history.</li>
+    <li><strong>It prints cleanly.</strong> If you want a paper copy, there's a one-click print view that fits neatly onto a page.</li>
+</ul>
+
+<h2>Try it</h2>
+
+<p>It's free, and it always will be &mdash; that's a term of the license it's released under (AGPL-3.0 with the Commons Clause: modifiable and inspectable, but not resellable as a hosted product).</p>
+
+<ul>
+    <li><strong>Use it:</strong> <a href="https://surf4miles.z-add.co.uk/">https://surf4miles.z-add.co.uk/</a></li>
+    <li><strong>Source code:</strong> <a href="https://github.com/StuMP90/suft-miles">https://github.com/StuMP90/suft-miles</a></li>
+</ul>
+
+<p>Surf4Miles is an independent, fan-made project and isn't affiliated with or endorsed by BYD.</p>

@@ -1,0 +1,11 @@
+🚗⚡ Got a BYD Dolphin Surf? I built a free tool for you.
+
+Surf4Miles turns the trip data on your car's USB stick into a proper energy report: cost per mile, miles per kWh, how you compare to a petrol or diesel car, and more — all from the EC_database.db file you can copy off your car in a couple of minutes.
+
+The bit I'm most pleased with: there's no account, and your driving data never leaves your browser. Nothing is stored on the server — it's all kept locally on your own device, and you can back it up or move it between devices (like your phone and the in-car browser) whenever you like.
+
+It's free, it's fan-made, and it's not affiliated with BYD in any way — just something I built for my own car that felt worth sharing with other owners.
+
+👉 https://surf4miles.z-add.co.uk/
+
+#BYD #DolphinSurf #ElectricVehicle #EVOwners #EV
