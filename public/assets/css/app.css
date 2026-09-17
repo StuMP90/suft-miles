@@ -131,6 +131,51 @@ button.danger:hover {
     margin-top: 4px;
 }
 
+.link-button {
+    background: none;
+    border: none;
+    padding: 0;
+    color: #38a169;
+    font-weight: 600;
+    font-size: inherit;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.link-button:hover {
+    background: none;
+    color: #2f855a;
+}
+
+#privacy-dialog {
+    max-width: 520px;
+    width: calc(100% - 40px);
+    border: none;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+#privacy-dialog::backdrop {
+    background: rgba(45, 55, 72, 0.5);
+}
+
+#privacy-dialog h2 {
+    margin-bottom: 16px;
+}
+
+#privacy-dialog p {
+    color: #4a5568;
+    line-height: 1.5;
+    margin-bottom: 14px;
+}
+
+#privacy-dialog code {
+    background: #f7fafc;
+    padding: 1px 5px;
+    border-radius: 4px;
+}
+
 .status-message {
     margin-top: 10px;
     color: #4a5568;

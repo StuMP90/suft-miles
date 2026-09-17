@@ -15,9 +15,18 @@
             <div class="header-text">
                 <h1>Surf4Miles</h1>
                 <p class="subtitle">BYD Dolphin Surf &middot; Energy Efficiency Report</p>
-                <p class="privacy-note">Your driving data stays in this browser. Nothing is stored on this site.</p>
+                <p class="privacy-note">Your driving data stays in this browser. Nothing is stored on this site. <button type="button" id="privacy-info-btn" class="link-button">How does this work?</button></p>
             </div>
         </div>
+
+        <dialog id="privacy-dialog">
+            <h2>How your data stays private</h2>
+            <p>Your cumulative trip history is saved only in this browser, using a browser storage feature called IndexedDB &mdash; the same kind of local storage your browser uses for offline web apps. It is never written to a database on this server, and there's no account for it to be attached to.</p>
+            <p>When you add trips or view your report, your <code>EC_database.db</code> and/or cumulative data are sent once to the server just long enough to calculate the numbers. The server works on a temporary copy, sends the result straight back to your browser, and deletes that temporary copy immediately &mdash; nothing is written to permanent storage or logged.</p>
+            <p>Your electricity rates and comparison settings are saved the same way, in this browser's local storage.</p>
+            <p>You're in full control of the local copy at any time: <strong>Backup</strong> downloads it as a file, <strong>Restore</strong> merges a backup back in (handy when switching devices), and <strong>Delete this profile's data</strong> wipes it from this browser for good.</p>
+            <button type="button" id="privacy-dialog-close">Close</button>
+        </dialog>
 
         <div class="panel" id="profile-panel">
             <div class="panel-row">

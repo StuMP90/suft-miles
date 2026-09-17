@@ -25,6 +25,9 @@
         statusMessage: document.getElementById('status-message'),
         reportContainer: document.getElementById('report-container'),
         generatedAt: document.getElementById('generated-at'),
+        privacyInfoBtn: document.getElementById('privacy-info-btn'),
+        privacyDialog: document.getElementById('privacy-dialog'),
+        privacyDialogClose: document.getElementById('privacy-dialog-close'),
     };
 
     function getProfileNames() {
@@ -319,6 +322,8 @@
         els.addTripsBtn.addEventListener('click', handleAddTrips);
         els.restoreBtn.addEventListener('click', handleRestore);
         els.backupBtn.addEventListener('click', handleBackup);
+        els.privacyInfoBtn.addEventListener('click', () => els.privacyDialog.showModal());
+        els.privacyDialogClose.addEventListener('click', () => els.privacyDialog.close());
 
         await loadReportForActiveProfile();
     }

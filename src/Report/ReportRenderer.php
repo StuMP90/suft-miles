@@ -107,7 +107,7 @@ final class ReportRenderer
             ],
             ['Cost per Mile (Standard)', self::num($s->costPerMileStandardPence, 2), 'p'],
             ['Cost per Mile (Peak Save)', self::num($s->costPerMilePeakSavePence, 2), 'p'],
-            ['Gov E.Tax per Mile', self::num($s->govETaxPerMilePence, 2), 'p'],
+            ['Gov E.Tax per Mile (2028 proposal)', self::num($s->govETaxPerMilePence, 2), 'p'],
             [
                 sprintf('%s Equiv (%s MPG @ £%s/L - %s)', $comparisonLabel, self::num($comparisonMpg, 0), self::num($comparisonPricePerLitre, 2), $comparisonDate),
                 '£' . self::num($s->totalComparisonCost, 2) . ' (' . self::num($s->comparisonCostPerMilePence, 2) . 'p/mi)',
