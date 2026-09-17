@@ -1,0 +1,5 @@
+/vendor/
+/var/cache/*
+!/var/cache/.gitkeep
+.php-cs-fixer.cache
+*.swp

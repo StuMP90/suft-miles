@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Surf4Miles - BYD Dolphin Surf Energy Report</title>
+    <link rel="icon" type="image/svg+xml" href="assets/img/logo.svg">
+    <link rel="apple-touch-icon" href="assets/img/logo.svg">
+    <link rel="stylesheet" href="assets/css/app.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img class="logo-icon" src="assets/img/logo.svg" width="64" height="64" alt="Surf4Miles logo">
+            <div class="header-text">
+                <h1>Surf4Miles</h1>
+                <p class="subtitle">BYD Dolphin Surf &middot; Energy Efficiency Report</p>
+                <p class="privacy-note">Your driving data stays in this browser. Nothing is stored on this site.</p>
+            </div>
+        </div>
+
+        <div class="panel" id="profile-panel">
+            <div class="panel-row">
+                <label for="profile-select">Car / profile</label>
+                <select id="profile-select"></select>
+                <button type="button" id="new-profile-btn">New profile&hellip;</button>
+                <button type="button" id="delete-profile-btn" class="danger">Delete this profile's data</button>
+            </div>
+            <div class="panel-row">
+                <label for="standard-rate">Standard rate (p/kWh)</label>
+                <input type="number" id="standard-rate" step="0.1" min="0" max="100">
+                <label for="peak-save-rate">Peak-save rate (p/kWh)</label>
+                <input type="number" id="peak-save-rate" step="0.1" min="0" max="100">
+            </div>
+            <div class="panel-row">
+                <label for="comparison-fuel-type">Compare against</label>
+                <select id="comparison-fuel-type">
+                    <option value="petrol">Petrol</option>
+                    <option value="diesel">Diesel</option>
+                </select>
+                <label for="comparison-mpg">at</label>
+                <input type="number" id="comparison-mpg" step="1" min="10" max="120">
+                <span>MPG</span>
+            </div>
+        </div>
+
+        <div class="panel" id="upload-panel">
+            <div class="panel-row">
+                <label for="ec-database-input">Add trips from EC_database.db</label>
+                <input type="file" id="ec-database-input" accept=".db">
+                <button type="button" id="add-trips-btn">Add Trips</button>
+                <button type="button" id="download-btn">Download my data (.db)</button>
+            </div>
+            <p id="status-message" class="status-message" role="status"></p>
+        </div>
+
+        <div id="report-container">
+            <p class="empty-state">No data yet for this profile &mdash; upload your <code>EC_database.db</code> above to get started.</p>
+        </div>
+
+        <div class="footer">
+            <p id="generated-at"></p>
+            <p class="disclaimer">Surf4Miles is an independent, fan-made tool and is not affiliated with or endorsed by BYD.</p>
+        </div>
+    </div>
+
+    <script src="assets/js/idb-store.js"></script>
+    <script src="assets/js/app.js"></script>
+</body>
+</html>
