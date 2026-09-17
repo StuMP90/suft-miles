@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+        width: 1200px;
+        height: 630px;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        background: linear-gradient(135deg, #c4d82e 0%, #8fb91a 100%);
+    }
+    .card {
+        position: absolute;
+        top: 65px; left: 60px; right: 60px; bottom: 65px;
+        background: white;
+        border-radius: 28px;
+        box-shadow: 0 12px 40px rgba(0,0,0,0.18);
+        display: flex;
+        align-items: center;
+        padding: 0 70px;
+        gap: 60px;
+    }
+    .logo {
+        flex-shrink: 0;
+        width: 220px;
+        height: 220px;
+        border-radius: 48px;
+    }
+    h1 {
+        color: #2d3748;
+        font-size: 68px;
+        line-height: 1.05;
+    }
+    .tagline {
+        color: #718096;
+        font-size: 28px;
+        margin-top: 10px;
+        margin-bottom: 26px;
+    }
+    .feature {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        color: #2d3748;
+        font-size: 26px;
+        font-weight: 600;
+        margin-bottom: 10px;
+    }
+    .tick {
+        color: #38a169;
+        font-size: 26px;
+    }
+</style>
+</head>
+<body>
+    <div class="card">
+        <img class="logo" src="LOGO_SRC">
+        <div>
+            <h1>Surf4Miles</h1>
+            <div class="tagline">Free energy reports for BYD Dolphin Surf owners</div>
+            <div class="feature"><span class="tick">&#10003;</span> No account, ever</div>
+            <div class="feature"><span class="tick">&#10003;</span> Your data stays in your browser</div>
+            <div class="feature"><span class="tick">&#10003;</span> Cost, MPGe &amp; petrol/diesel comparison</div>
+        </div>
+    </div>
+</body>
+</html>
