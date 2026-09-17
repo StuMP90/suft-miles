@@ -2,7 +2,7 @@
     "name": "smgithub/surf-miles",
     "description": "Surf4Miles - BYD Dolphin Surf energy efficiency report website",
     "type": "project",
-    "license": "proprietary",
+    "license": "SEE LICENSE IN LICENSE.md",
     "require": {
         "php": ">=8.3",
         "ext-sqlite3": "*"
