@@ -79,10 +79,12 @@
             </div>
             <div class="panel-row">
                 <label for="restore-database-input">Restore from a backup</label>
-                <input type="file" id="restore-database-input" accept=".db">
+                <input type="file" id="restore-database-input" accept=".db,.jpg">
                 <button type="button" id="restore-btn">Restore</button>
                 <button type="button" id="backup-btn">Backup my data (.db)</button>
+                <button type="button" id="backup-car-btn">Backup from Car</button>
             </div>
+            <p class="hint">In the car, use <strong>Backup from Car</strong>: the in-car browser only allows image downloads, so it saves the same backup as a <code>.db.jpg</code> file. It won't open as a picture, but Restore accepts it as it is.</p>
             <p class="hint">Backup and restore are merges, not overwrites &mdash; safe to use across two computers (e.g. a desktop and the in-car browser) without losing trips recorded on either one.</p>
             <p id="status-message" class="status-message" role="status"></p>
         </div>

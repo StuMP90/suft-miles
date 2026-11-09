@@ -22,6 +22,7 @@
         restoreInput: document.getElementById('restore-database-input'),
         restoreBtn: document.getElementById('restore-btn'),
         backupBtn: document.getElementById('backup-btn'),
+        backupCarBtn: document.getElementById('backup-car-btn'),
         statusMessage: document.getElementById('status-message'),
         reportContainer: document.getElementById('report-container'),
         generatedAt: document.getElementById('generated-at'),
@@ -213,7 +214,9 @@
         }
     }
 
-    async function handleBackup() {
+    // forCar: the in-car browser only allows image downloads, so the same bytes
+    // are offered with an image extension and MIME type. Restore accepts them as is.
+    async function handleBackup(forCar) {
         const activeName = getActiveProfile();
         const profile = await Surf4MilesStore.getProfile(activeName);
         if (!profile || !profile.dbBlob) {
@@ -223,10 +226,11 @@
 
         const safeName = activeName.replace(/[^A-Za-z0-9 _-]/g, '').trim() || 'surf4miles';
         const dateStamp = new Date().toISOString().slice(0, 10);
-        const url = URL.createObjectURL(profile.dbBlob);
+        const blob = forCar ? new Blob([profile.dbBlob], { type: 'image/jpeg' }) : profile.dbBlob;
+        const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = safeName + '-' + dateStamp + '.db';
+        a.download = safeName + '-' + dateStamp + (forCar ? '.db.jpg' : '.db');
         document.body.appendChild(a);
         a.click();
         a.remove();
@@ -236,7 +240,7 @@
     async function handleRestore() {
         const file = els.restoreInput.files[0];
         if (!file) {
-            setStatus('Choose a backup .db file first', true);
+            setStatus('Choose a backup file first', true);
             return;
         }
 
@@ -329,7 +333,8 @@
         els.comparisonMpg.addEventListener('change', handleSettingsChange);
         els.addTripsBtn.addEventListener('click', handleAddTrips);
         els.restoreBtn.addEventListener('click', handleRestore);
-        els.backupBtn.addEventListener('click', handleBackup);
+        els.backupBtn.addEventListener('click', () => handleBackup(false));
+        els.backupCarBtn.addEventListener('click', () => handleBackup(true));
         els.privacyInfoBtn.addEventListener('click', () => els.privacyDialog.showModal());
         els.privacyDialogClose.addEventListener('click', () => els.privacyDialog.close());
         els.printBtn.addEventListener('click', () => window.print());
